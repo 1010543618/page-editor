@@ -1,0 +1,33 @@
+{
+  "name": "page-editor",
+  "version": "1.0.0",
+  "description": "A WYSIWYG web page editor.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "bootstrap": "^4.0.0",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.3.1",
+    "jquery-scrollsync": "^1.0.4"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "rollup": "^0.56.2",
+    "rollup-plugin-node-resolve": "^3.0.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1010543618/page-editor.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/1010543618/page-editor/issues"
+  },
+  "homepage": "https://github.com/1010543618/page-editor#readme"
+}

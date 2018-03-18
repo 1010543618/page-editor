@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
+  <style>
+    .btn-toolbar > *{
+      margin: 0 0 0.3rem 0.3rem;
+    }
+  </style>
+</head>
+<body>
+<div id="page">
+  <div style="position: sticky;top: 0;left: 0;z-index: 9999;">
+    <div class="card text-white bg-secondary">
+      <div class="card-body">
+        <div class="btn-toolbar" role="toolbar">
+          <button onclick="PE.source(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> HTML源码</button>
+          <div class="btn-group btn-group-sm">
+            <button onclick="PE.publish()" class="btn btn-primary"><i class="fa fa-check"></i> 发布</button>
+            <button onclick="PE.save()" class="btn btn-success"><i class="fa fa-save"></i> 保存</button>
+            <button onclick="PE.preview()" class="btn btn-dark"><i class="fa fa-eye"></i> 预览</button>
+            <button onclick="PE.discard()" class="btn btn-danger"><i class="fa fa-undo"></i> 放弃</button>
+          </div>
+          <div class="btn-group btn-group-sm">
+            <button onclick="PE.undo()" class="btn btn-primary"><i class="fa fa-check"></i> 撤销</button>
+            <button onclick="PE.redo()" class="btn btn-success"><i class="fa fa-save"></i> 重做</button>
+          </div>
+          <button onclick="PE.show_blocks ()" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 显示区块</button>
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="">修正不翻译的元素：</span>
+            </div>
+            <div class="input-group-append">
+              <button onclick="PE.correct_not_trans('select')" class="btn btn-success">选择元素</button>
+              <button onclick="PE.correct_not_trans('correct')" class="btn btn-danger">进行修正</button>
+              <button onclick="PE.correct_not_trans('clear')"  class="btn btn-info">清除选择</button>
+            </div>
+          </div>
+          <button onclick="PE.reset ()" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 重置</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-6 border border-danger">
+        <div class="row">
+          <iframe id="ori" class="w-100" frameborder="0" src="file:///C:/Users/Administrator/Desktop/page-editor/test/iframe_for_test.html"></iframe>
+          <div>隐藏原网页</div>
+        </div>
+      </div>
+      <div class="col-md-6 border border-primary">
+        <div class="row">
+          <iframe id="trans" class="w-100" frameborder="0" src="file:///C:/Users/Administrator/Desktop/page-editor/test/iframe_for_test.html"></iframe>
+          <textarea id="transHTML" class="w-100"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../node_modules/jquery/dist/jquery.js"></script>
+<script src="../node_modules/bootstrap/dist/js/bootstrap.js"></script>
+<script src="../dist/pageeditor.js"></script>
+<script>
+  PE.init('page')
+</script>
+<script>
+  $(function(){
+    $('#dh-resolve').click(function(){
+      $('#gpte-trans').contents().find('link').each(function(){
+        var href = $(this).attr('href');
+        console.log(URI(href));
+        href && !URI(href).hostname() && $(this).attr('href', URI(ORI_URL).absoluteTo(href) + href);
+      });
+      $('#gpte-trans').contents().find('img, script').each(function(){
+        var src = $(this).attr('src');
+        src && !URI(src).hostname() && $(this).attr('src', URI(ORI_URL).absoluteTo(src) + src);
+      });
+    });
+  });
+</script>
+</body>
+</html>
+
+
