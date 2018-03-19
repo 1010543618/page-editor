@@ -1,11 +1,3 @@
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('jquery')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'jquery'], factory) :
-	(factory((global.PE = {}),global.$));
-}(this, (function (exports,$) { 'use strict';
-
-$ = $ && $.hasOwnProperty('default') ? $['default'] : $;
-
 /**
  * 工具函数包
  * @file
@@ -18,7 +10,8 @@ $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
  * @module UE.utils
  * @unfile
  */
-var utils$1 = {
+export default utils
+var utils = {
 
     /**
      * 用给定的迭代器遍历对象
@@ -220,8 +213,8 @@ var utils$1 = {
      */
     inherits:function (subClass, superClass) {
         var oldP = subClass.prototype,
-            newP = utils$1.makeInstance(superClass.prototype);
-        utils$1.extend(newP, oldP, true);
+            newP = utils.makeInstance(superClass.prototype);
+        utils.extend(newP, oldP, true);
         subClass.prototype = newP;
         return (newP.constructor = subClass);
     },
@@ -444,7 +437,7 @@ var utils$1 = {
      */
     listToMap:function (list) {
         if (!list)return {};
-        list = utils$1.isArray(list) ? list : list.split(',');
+        list = utils.isArray(list) ? list : list.split(',');
         for (var i = 0, ci, obj = {}; ci = list[i++];) {
             obj[ci.toUpperCase()] = obj[ci] = 1;
         }
@@ -619,7 +612,7 @@ var utils$1 = {
                 if (item.ready) {
                     fn && fn();
                 } else {
-                    item.funs.push(fn);
+                    item.funs.push(fn)
                 }
                 return;
             }
@@ -632,7 +625,7 @@ var utils$1 = {
                 var html = [];
                 for (var p in obj) {
                     if (p == 'tag')continue;
-                    html.push(p + '="' + obj[p] + '"');
+                    html.push(p + '="' + obj[p] + '"')
                 }
                 doc.write('<' + obj.tag + ' ' + html.join(' ') + ' ></' + obj.tag + '>');
                 return;
@@ -730,7 +723,7 @@ var utils$1 = {
      * @param {String}    val style字符串
      */
     optCss:function (val) {
-        var padding, margin;
+        var padding, margin, border;
         val = val.replace(/(padding|margin|border)\-([^:]+):([^;]+);?/gi, function (str, key, name, val) {
             if (val.split(' ').length == 1) {
                 switch (key) {
@@ -762,7 +755,7 @@ var utils$1 = {
                 val += ';' + name + ':' +
                     (t == b && b == l && l == r ? t :
                         t == b && l == r ? (t + ' ' + l) :
-                            l == r ? (t + ' ' + l + ' ' + b) : (t + ' ' + r + ' ' + b + ' ' + l)) + ';';
+                            l == r ? (t + ' ' + l + ' ' + b) : (t + ' ' + r + ' ' + b + ' ' + l)) + ';'
             }
             return val;
         }
@@ -795,8 +788,8 @@ var utils$1 = {
             if (source.hasOwnProperty(i)) {
                 tmp = source[i];
                 if (typeof tmp == 'object') {
-                    target[i] = utils$1.isArray(tmp) ? [] : {};
-                    utils$1.clone(source[i], target[i]);
+                    target[i] = utils.isArray(tmp) ? [] : {};
+                    utils.clone(source[i], target[i])
                 } else {
                     target[i] = tmp;
                 }
@@ -887,7 +880,7 @@ var utils$1 = {
                         doReady(doc);
                     })();
                     win.attachEvent('onload', function () {
-                        doReady(doc);
+                        doReady(doc)
                     });
                 } else {
                     doc.addEventListener("DOMContentLoaded", function () {
@@ -895,7 +888,7 @@ var utils$1 = {
                         doReady(doc);
                     }, false);
                     win.addEventListener('load', function () {
-                        doReady(doc);
+                        doReady(doc)
                     }, false);
                 }
             }
@@ -925,7 +918,7 @@ var utils$1 = {
             //传递过来的对象和函数不在提交之列
             if (!((typeof json[i]).toLowerCase() == "function" || (typeof json[i]).toLowerCase() == "object")) {
                 strArr.push( encodeURIComponent(i) + "="+encodeURIComponent(json[i]) );
-            } else if (utils$1.isArray(json[i])) {
+            } else if (utils.isArray(json[i])) {
                 //支持传数组内容
                 for(var j = 0; j < json[i].length; j++) {
                     strArr.push( encodeURIComponent(i) + "[]="+encodeURIComponent(json[i][j]) );
@@ -954,7 +947,7 @@ var utils$1 = {
     clearEmptyAttrs : function(obj){
         for(var p in obj){
             if(obj[p] === ''){
-                delete obj[p];
+                delete obj[p]
             }
         }
         return obj;
@@ -1002,323 +995,9 @@ var utils$1 = {
  * @param { * } object 需要判断的对象
  * @return { Boolean } 给定的对象是否是普通对象
  */
-utils$1.each(['String', 'Function', 'Array', 'Number', 'RegExp', 'Object', 'Date'], function (v) {
-    utils$1['is' + v] = function (obj) {
+utils.each(['String', 'Function', 'Array', 'Number', 'RegExp', 'Object', 'Date'], function (v) {
+    utils['is' + v] = function (obj) {
         return Object.prototype.toString.apply(obj) == '[object ' + v + ']';
-    };
+    }
 });
 
-var UIBase$1 = function () {};
-UIBase$1.prototype = {
-  className:'',
-  uiName:'',
-  initOptions:function (options) {
-    var me = this;
-    for (var k in options) {
-        me[k] = options[k];
-    }
-    // this.id = this.id || 'edui' + uiUtils.uid();
-  },
-  render:function (holder) {
-    var html = this.renderHtml();
-    var el = uiUtils.createElementByHtml(html);
-
-    //by xuheng 给每个node添加class
-    var list = domUtils.getElementsByTagName(el, "*");
-    var theme = "edui-" + (this.theme || this.editor.options.theme);
-    var layer = document.getElementById('edui_fixedlayer');
-    for (var i = 0, node; node = list[i++];) {
-        domUtils.addClass(node, theme);
-    }
-    domUtils.addClass(el, theme);
-    if(layer){
-        layer.className="";
-        domUtils.addClass(layer,theme);
-    }
-
-    var seatEl = this.getDom();
-    if (seatEl != null) {
-        seatEl.parentNode.replaceChild(el, seatEl);
-        uiUtils.copyAttributes(el, seatEl);
-    } else {
-        if (typeof holder == 'string') {
-            holder = document.getElementById(holder);
-        }
-        holder = holder || uiUtils.getFixedLayer();
-        domUtils.addClass(holder, theme);
-        holder.appendChild(el);
-    }
-    this.postRender();
-  },
-  getDom:function (name) {
-    if (!name) {
-        return document.getElementById(this.id);
-    } else {
-        return document.getElementById(this.id + '_' + name);
-    }
-  },
-  postRender:function () {
-    this.fireEvent('postrender');
-  },
-  getHtmlTpl:function () {
-    return '';
-  },
-  formatHtml:function (tpl) {
-    var prefix = 'edui-' + this.uiName;
-    return (tpl
-        .replace(/##/g, this.id)
-        .replace(/%%-/g, this.uiName ? prefix + '-' : '')
-        .replace(/%%/g, (this.uiName ? prefix : '') + ' ' + this.className)
-        .replace(/\$\$/g, this._globalKey));
-  },
-  renderHtml:function () {
-    return this.formatHtml(this.getHtmlTpl());
-  },
-  dispose:function () {
-    var box = this.getDom();
-    if (box) baidu.editor.dom.domUtils.remove(box);
-    uiUtils.unsetGlobal(this.id);
-  }
-};
-
-var Toolbar$1 = function (options){
-  console.log(this, options);
-  this.initOptions(options);
-  this.initToolbar();
-};
-Toolbar$1.prototype = {
-  items: null,
-  initToolbar: function (){
-    var items = [];
-    for (var i=0; i < this.opt_items.length; i++) {
-      items.push(new Button[opts.toolbar]);
-    }
-    this.items = this.items || [];
-  },
-  add: function (item,index){
-    if(index === undefined){
-        this.items.push(item);
-    }else{
-        this.items.splice(index,0,item);
-    }
-
-  },
-  getHtmlTpl: function (){
-    var buff = [];
-    console.log(this);
-    for (var i=0; i<this.items.length; i++) {
-        buff[i] = this.items[i].renderHtml();
-    }
-    return '<div style="position: sticky;top: 0;left: 0;z-index: 9999;">\
-              <div class="card text-white bg-secondary">\
-                <div class="card-body">\
-                  <div class="btn-toolbar" role="toolbar">'
-                  + buff.join('') +
-                '</div>\
-                </div>\
-              </div>\
-            </div>'
-  },
-  postRender: function (){
-    var box = this.getDom();
-    for (var i=0; i<this.items.length; i++) {
-        this.items[i].postRender();
-    }
-    uiUtils.makeUnselectable(box);
-  },
-  _onMouseDown: function (e){
-    var target = e.target || e.srcElement,
-        tagName = target && target.tagName && target.tagName.toLowerCase();
-    if (tagName == 'input' || tagName == 'object' || tagName == 'object') {
-        return false;
-    }
-  }
-};
-utils$1.inherits(Toolbar$1, UIBase$1);
-
-var display_window = '<div class="container-fluid">\
-  <div class="row">\
-    <div class="col-md-6 border border-danger">\
-      <div class="row">\
-        <iframe id="peui-ori" class="w-100" frameborder="0" src=""></iframe></iframe>\
-      </div>\
-    </div>\
-    <div class="col-md-6 border border-primary">\
-      <div class="row">\
-        <iframe id="peui-trans" class="w-100" frameborder="0" src=""></iframe>\
-        <textarea id="peui-transHTML" class="w-100"></textarea>\
-      </div>\
-    </div>\
-  </div>\
-</div>';
-
-function init_ui(opts, UI){
-  var $PE = opts.$PE;
-
-  
-  var toolbar = new Toolbar$1({opt_items: opts.toolbar});
-  $PE.append(toolbar.getHtmlTpl());
-  $PE.append(display_window);
-  UI.ori = $PE.find('ori');
-  UI.trans = $PE.find('trans');
-  UI.transHTML = $PE.find('transHTML');
-}
-
-function init(options){
-  var opts = {};
-  if($.type(options) == 'object'){
-    
-  }
-
-  if($.type(options) == 'string'){
-    opts.$PE = $('#'+options);
-  }
-  
-  var defaults = {
-    publish_url: '',
-    toolbar: [[
-      'source', '|', 
-      'publish', 'save', 'preview', 'discard', '|',
-      'undo', 'redo', '|',
-      'show_blocks', '|',
-      'correct_not_trans', '|',
-      'hide_ori_page', '|',
-      'reset'
-    ]]
-  };
-  
-  // 编辑器的全部ui
-  this.UI = {};
-
-  // 编辑器的状态
-  this.status = {
-    source: false,
-    edit: false,
-    binding_scroll: false
-  };
-
-  // 使用jQuery.extend 覆盖插件默认参数
-  this.opts = $.extend({}, defaults, opts);
-
-  // 保存的数据
-  this.data = {};
-
-  // 初始化工具条
-  init_ui(this.opts, this.UI);
-
-  Object.defineProperty(this, 'ori_contents', {
-    get: function(){
-      return $(this.opts.$ori[0].contentDocument)
-    }
-  });
-  Object.defineProperty(this, 'trans_contents', {
-    get: function(){
-      return $(this.opts.$trans[0].contentDocument)
-    }
-  });
-  Object.defineProperty(this, 'pageHTML', {
-    get: function(){
-      return this.trans_contents.find('html').get(0).outerHTML
-    },
-    set: function(html){
-      console.log(html, this.opts.$trans.get(0));
-      var trans = this.opts.$trans.get(0);
-      trans.contentDocument.open();
-      trans.contentDocument.write(html);
-      trans.contentDocument.close();
-    }
-  });
-  return this;
-}
-
-function source(btn){
-  if (!this.status.source) {
-    $(btn).addClass('active');
-    this.opts.$trans.hide();
-    this.opts.$transHTML.val(this.pageHTML).show();
-    this.status.source = true;
-  }else{
-    $(btn).removeClass('active');
-    this.pageHTML = this.opts.$transHTML.val();
-    this.opts.$transHTML.hide();
-    this.opts.$trans.show();
-    this.status.source = false;
-  }
-}
-
-function publish(){
-  $.ajax({
-    url : this.opts.publish_url,
-    type : "post",
-    data : {'html': this.opts.transHTML},
-    dataType : "json",
-    success : function(data){
-      if(data.status == true){
-        alert(data.data);
-      }else{
-        alert(data.msg);
-      }
-    },
-    error : function(data){
-      alert("服务器发生错误");
-    }
-  });
-}
-
-function save(){
-  $.ajax({
-    url : this.opts.save_url,
-    type : "post",
-    data : {'html': this.opts.transHTML},
-    dataType : "json",
-    success : function(data){
-      if(data.status == true){
-        alert(data.data);
-      }else{
-        alert(data.msg);
-      }
-    },
-    error : function(data){
-      alert("服务器发生错误");
-    }
-  });
-}
-
-function preview(){
-  $.ajax({
-    url : this.opts.preview_url,
-    type : "post",
-    data : {'html': this.opts.transHTML},
-    dataType : "json",
-    success : function(data){
-      if(data.status == true){
-        alert(data.data);
-      }else{
-        alert(data.msg);
-      }
-    },
-    error : function(data){
-      alert("服务器发生错误");
-    }
-  });
-}
-
-function discard(){
-  if(confirm('是否放弃当前修改！')) location.href = this.opts.discard_url;
-}
-
-function reset(){
-  this.opts.$trans.attr('src', this.opts.$trans.attr('src'));
-}
-
-exports.init = init;
-exports.source = source;
-exports.publish = publish;
-exports.save = save;
-exports.preview = preview;
-exports.discard = discard;
-exports.reset = reset;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-})));

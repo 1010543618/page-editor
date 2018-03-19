@@ -13,11 +13,7 @@
 </head>
 <body>
 <div id="page">
-  <div style="position: sticky;top: 0;left: 0;z-index: 9999;">
-    <div class="card text-white bg-secondary">
-      <div class="card-body">
-        <div class="btn-toolbar" role="toolbar">
-          <button onclick="PE.source(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> HTML源码</button>
+  <button onclick="PE.source(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> HTML源码</button>
           <div class="btn-group btn-group-sm">
             <button onclick="PE.publish()" class="btn btn-primary"><i class="fa fa-check"></i> 发布</button>
             <button onclick="PE.save()" class="btn btn-success"><i class="fa fa-save"></i> 保存</button>
@@ -39,27 +35,11 @@
               <button onclick="PE.correct_not_trans('clear')"  class="btn btn-info">清除选择</button>
             </div>
           </div>
+          <button onclick="PE.hide_ori_page ()" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 隐藏原网页</button>
           <button onclick="PE.reset ()" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 重置</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-6 border border-danger">
-        <div class="row">
-          <iframe id="ori" class="w-100" frameborder="0" src="file:///C:/Users/Administrator/Desktop/page-editor/test/iframe_for_test.html"></iframe>
-          <div>隐藏原网页</div>
-        </div>
-      </div>
-      <div class="col-md-6 border border-primary">
-        <div class="row">
-          <iframe id="trans" class="w-100" frameborder="0" src="file:///C:/Users/Administrator/Desktop/page-editor/test/iframe_for_test.html"></iframe>
-          <textarea id="transHTML" class="w-100"></textarea>
-        </div>
-      </div>
-    </div>
-  </div>
+        
+      
+  
 </div>
 <script src="../node_modules/jquery/dist/jquery.js"></script>
 <script src="../node_modules/bootstrap/dist/js/bootstrap.js"></script>

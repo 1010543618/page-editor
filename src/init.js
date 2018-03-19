@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import init_ui from './ui/init_ui'
 export default function(options){
   var opts = {}
   if($.type(options) == 'object'){
@@ -6,15 +7,26 @@ export default function(options){
   }
 
   if($.type(options) == 'string'){
-    opts.$ori = $('#'+options).find('#ori')
-    opts.$trans = $('#'+options).find('#trans')
-    opts.$transHTML = $('#'+options).find('#transHTML')
+    opts.$PE = $('#'+options);
   }
   
   var defaults = {
     publish_url: '',
+    toolbar: [[
+      'source', '|', 
+      'publish', 'save', 'preview', 'discard', '|',
+      'undo', 'redo', '|',
+      'show_blocks', '|',
+      'correct_not_trans', '|',
+      'hide_ori_page', '|',
+      'reset'
+    ]]
   }
   
+  // 编辑器的全部ui
+  this.UI = {}
+
+  // 编辑器的状态
   this.status = {
     source: false,
     edit: false,
@@ -26,6 +38,9 @@ export default function(options){
 
   // 保存的数据
   this.data = {};
+
+  // 初始化工具条
+  init_ui(this.opts, this.UI);
 
   Object.defineProperty(this, 'ori_contents', {
     get: function(){
