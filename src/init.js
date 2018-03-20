@@ -12,15 +12,15 @@ export default function(options){
   
   var defaults = {
     publish_url: '',
-    toolbar: [[
-      'source', '|', 
-      'publish', 'save', 'preview', 'discard', '|',
-      'undo', 'redo', '|',
-      'show_blocks', '|',
-      'correct_not_trans', '|',
-      'hide_ori_page', '|',
+    toolbar: [
+      'source', 
+      ['publish', 'save', 'preview', 'discard'],
+      ['undo', 'redo'],
+      'show_blocks',
+      'correct_not_trans',
+      'hide_ori_page',
       'reset'
-    ]]
+    ]
   }
   
   // 编辑器的全部ui
@@ -44,12 +44,12 @@ export default function(options){
 
   Object.defineProperty(this, 'ori_contents', {
     get: function(){
-      return $(this.opts.$ori[0].contentDocument)
+      return $(this.UI.$ori[0].contentDocument)
     }
   });
   Object.defineProperty(this, 'trans_contents', {
     get: function(){
-      return $(this.opts.$trans[0].contentDocument)
+      return $(this.UI.$trans[0].contentDocument)
     }
   });
   Object.defineProperty(this, 'pageHTML', {
@@ -57,8 +57,8 @@ export default function(options){
       return this.trans_contents.find('html').get(0).outerHTML
     },
     set: function(html){
-      console.log(html, this.opts.$trans.get(0))
-      var trans = this.opts.$trans.get(0)
+      console.log(html, this.UI.$trans.get(0))
+      var trans = this.UI.$trans.get(0)
       trans.contentDocument.open();
       trans.contentDocument.write(html);
       trans.contentDocument.close();

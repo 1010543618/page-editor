@@ -8,7 +8,6 @@ UIBase.prototype = {
     for (var k in options) {
         me[k] = options[k];
     }
-    // this.id = this.id || 'edui' + uiUtils.uid();
   },
   render:function (holder) {
     var html = this.renderHtml();
