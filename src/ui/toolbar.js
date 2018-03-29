@@ -2,8 +2,10 @@ export default '<div style="position: sticky;top: 0;left: 0;z-index: 9999;">\
   <div class="card text-white bg-secondary">\
     <div class="card-body">\
       <div class="btn-toolbar" role="toolbar">\
-        <button id="#peui-load_page" onclick="PE.load_page(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> HTML源码</button>\
+        <button id="#peui-load_page" onclick="PE.load_page(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 加载页面</button>\
         <button id="#peui-source" onclick="PE.source(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> HTML源码</button>\
+        <button id="#peui-res" onclick="PE.res(this, \'resolve\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 修正外部资源url</button>\
+        <button id="#peui-res" onclick="PE.res(this, \'download\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 下载外部资源</button>\
         <div class="btn-group btn-group-sm">\
           <button id="#peui-publish" onclick="PE.publish()" class="btn btn-primary"><i class="fa fa-check"></i> 发布</button>\
           <button id="#peui-save" onclick="PE.save()" class="btn btn-success"><i class="fa fa-save"></i> 保存</button>\

@@ -13,8 +13,12 @@ export default function(options){
   }
   
   var defaults = {
+    // iframe中页面的url
     page_url: './iframe_for_test.html',
-    publish_url: '',
+    // 原始页面的url
+    ori_url: 'http://getbootstrap.com/docs/4.0/getting-started/introduction/',
+    // 服务器的url
+    server_url: '',
     toolbar: [
       'source', 
       ['publish', 'save', 'preview', 'discard'],
@@ -23,7 +27,7 @@ export default function(options){
       'correct_not_trans',
       'hide_ori_page',
       'reset'
-    ]
+    ],
   }
   
   // 编辑器的全部ui

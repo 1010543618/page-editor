@@ -1,17 +1,20 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('jquery')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'jquery'], factory) :
-	(factory((global.PE = {}),global.$));
-}(this, (function (exports,$$1) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('jquery'), require('urijs')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'jquery', 'urijs'], factory) :
+	(factory((global.PE = {}),global.$,global.URI));
+}(this, (function (exports,$$1,URI) { 'use strict';
 
 $$1 = $$1 && $$1.hasOwnProperty('default') ? $$1['default'] : $$1;
+URI = URI && URI.hasOwnProperty('default') ? URI['default'] : URI;
 
 var toolbar = '<div style="position: sticky;top: 0;left: 0;z-index: 9999;">\
   <div class="card text-white bg-secondary">\
     <div class="card-body">\
       <div class="btn-toolbar" role="toolbar">\
-        <button id="#peui-load_page" onclick="PE.load_page(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> HTML源码</button>\
+        <button id="#peui-load_page" onclick="PE.load_page(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 加载页面</button>\
         <button id="#peui-source" onclick="PE.source(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> HTML源码</button>\
+        <button id="#peui-res" onclick="PE.res(this, \'resolve\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 修正外部资源url</button>\
+        <button id="#peui-res" onclick="PE.res(this, \'download\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 下载外部资源</button>\
         <div class="btn-group btn-group-sm">\
           <button id="#peui-publish" onclick="PE.publish()" class="btn btn-primary"><i class="fa fa-check"></i> 发布</button>\
           <button id="#peui-save" onclick="PE.save()" class="btn btn-success"><i class="fa fa-save"></i> 保存</button>\
@@ -130,8 +133,12 @@ function init(options){
   }
   
   var defaults = {
+    // iframe中页面的url
     page_url: './iframe_for_test.html',
-    publish_url: '',
+    // 原始页面的url
+    ori_url: 'http://getbootstrap.com/docs/4.0/getting-started/introduction/',
+    // 服务器的url
+    server_url: '',
     toolbar: [
       'source', 
       ['publish', 'save', 'preview', 'discard'],
@@ -140,7 +147,7 @@ function init(options){
       'correct_not_trans',
       'hide_ori_page',
       'reset'
-    ]
+    ],
   };
   
   // 编辑器的全部ui
@@ -281,6 +288,56 @@ function reset(){
   this.UI.$trans.attr('src', this.UI.$trans.attr('src'));
 }
 
+function res(dom, type){
+  switch(type){
+    case 'resolve' : 
+      if (!URI) console.error('未引入urijs！');
+      var ori_url = this.opts.ori_url;
+      this.ori_contents.find('link').each(function(){
+        var href = $$1(this).attr('href');
+        href && !URI(href).hostname() && $$1(this).attr('href', URI(href).absoluteTo(ori_url));
+      });
+      this.trans_contents.find('link').each(function(){
+        var href = $$1(this).attr('href');
+        href && !URI(href).hostname() && $$1(this).attr('href', URI(href).absoluteTo(ori_url));
+      });
+      this.ori_contents.find('img, script').each(function(){
+        var src = $$1(this).attr('src');
+        src && !URI(src).hostname() && $$1(this).attr('src', URI(src).absoluteTo(ori_url));
+      });
+      this.trans_contents.find('img, script').each(function(){
+        var src = $$1(this).attr('src');
+        src && !URI(src).hostname() && $$1(this).attr('src', URI(src).absoluteTo(ori_url));
+      });
+      break;
+    case 'download' : 
+      var src_uris = [];
+      this.trans_contents.find('link').each(function(){
+        src_uris.push($$1(this).attr('href'));
+      });
+      this.trans_contents.find('img, script').each(function(){
+        src_uris.push($$1(this).attr('src'));
+      });
+      $$1.ajax({
+        url : this.opts.server_url,
+        type : "post",
+        data : {'type':'download_src', 'src_uris': src_uris},
+        dataType : "json",
+        success : function(data){
+          if(data.status == true){
+            alert(data.data);
+          }else{
+            alert(data.msg);
+          }
+        },
+        error : function(data){
+          alert("服务器发生错误");
+        }
+      });
+      break;
+  }
+}
+
 exports.init = init;
 exports.source = source;
 exports.publish = publish;
@@ -288,6 +345,7 @@ exports.save = save;
 exports.preview = preview;
 exports.discard = discard;
 exports.reset = reset;
+exports.res = res;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

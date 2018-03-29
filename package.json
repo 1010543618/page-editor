@@ -10,7 +10,8 @@
     "bootstrap": "^4.0.0",
     "font-awesome": "^4.7.0",
     "jquery": "^3.3.1",
-    "jquery-scrollsync": "^1.0.4"
+    "jquery-scrollsync": "^1.0.4",
+    "urijs": "^1.19.1"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
