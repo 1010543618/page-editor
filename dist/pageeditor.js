@@ -11,7 +11,7 @@ var toolbar = '<div style="position: sticky;top: 0;left: 0;z-index: 9999;">\
   <div class="card text-white bg-secondary">\
     <div class="card-body">\
       <div class="btn-toolbar" role="toolbar">\
-        <button id="#peui-load_page" onclick="PE.load_page(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 加载页面</button>\
+        <button id="#peui-load_page" onclick="PE.load_page()" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 加载页面</button>\
         <button id="#peui-source" onclick="PE.source(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> HTML源码</button>\
         <button id="#peui-res" onclick="PE.res(this, \'resolve\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 修正外部资源url</button>\
         <button id="#peui-res" onclick="PE.res(this, \'download\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 下载外部资源</button>\
@@ -77,40 +77,50 @@ function init_ui(opts, UI){
   UI.$transHTML = $PE.find('#peui-transHTML');
 }
 
-function load_page(PE, callback){
-  $$1.ajax({
-    url : PE.opts.page_url,
+/**
+* 获取对照网页内容和编辑网易内容
+*/
+function load_page(callback){
+  var PE = this;
+  var get_ref = $$1.ajax({
+    url : PE.opts.ref_page_url,
     type : "get",
     dataType : "html",
-    success : function(html){
-      PE.ori_contents = PE.trans_contents = html;
-      callback(PE);
-    },
-    error : function(data){
-      alert("服务器发生错误");
-    }
   });
+  var get_edit = $$1.ajax({
+    url : PE.opts.edit_page_url,
+    type : "get",
+    dataType : "html",
+  });
+  // 去除html的y滚动条
+  var hidden_overflow_y = function(){
+    PE.UI.$ori.contents().find('html').attr('style', function(){
+      var this_style = $$1(this).attr('style');
+      return this_style ? this_style + ";overflow-y:hidden" : "overflow-y:hidden";
+    });
+    PE.UI.$trans.contents().find('html').attr('style', function(){
+      var this_style = $$1(this).attr('style');
+      return this_style ? this_style + ";overflow-y:hidden" : "overflow-y:hidden";
+    });
+  };
+  $$1.when(get_ref, get_edit)
+    .done(function(ref_html,edit_html){
+      PE.ori_contents = ref_html;
+      PE.trans_contents = edit_html;
+      hidden_overflow_y();
+      callback && callback.call(PE);
+    })
+    .fail(function(){alert("服务器发生错误");}); 
 }
 
 function correct_height(PE){
   // 初始化高度data
   PE.data.ori_height = 0;
   PE.data.trans_height = 0;
-  // 去除html的y滚动条
-  PE.UI.$ori.contents().find('html').attr('style', function(){
-    var this_style = $$1(this).attr('style');
-    console.log(this_style ? this_style + ";overflow-y:hidden" : "overflow-y:hidden");
-    return this_style ? this_style + ";overflow-y:hidden" : "overflow-y:hidden";
-  });
-  PE.UI.$trans.contents().find('html').attr('style', function(){
-    var this_style = $$1(this).attr('style');
-    return this_style ? this_style + ";overflow-y:hidden" : "overflow-y:hidden";
-  });
   // 实时更新height
   setInterval(function(){
     var $ori = PE.UI.$ori;
     var $trans = PE.UI.$trans;
-    console.log(PE.data.ori_height, $ori.contents().height());
     if (Math.abs(PE.data.ori_height - $ori.contents().height()) > 20) {
       PE.data.ori_height = $ori.contents().height() + 20;
       $ori.height(PE.data.ori_height);
@@ -124,19 +134,21 @@ function correct_height(PE){
 
 function init(options){
   var opts = {};
-  if($$1.type(options) == 'object'){
-    
+  if($$1.type(options) == 'object'){ 
+    opts = options;
   }
 
   if($$1.type(options) == 'string'){
-    opts.$PE = $$1('#'+options);
+    opts.el = options;
   }
   
   var defaults = {
-    // iframe中页面的url
-    page_url: './iframe_for_test.html',
+    // 左iframe中对照用的页面的url
+    ref_page_url: './iframe_for_test.html',
+    // 右iframe中编辑用的页面的url
+    edit_page_url: './iframe_for_test.html',
     // 原始页面的url
-    ori_url: 'http://getbootstrap.com/docs/4.0/getting-started/introduction/',
+    ori_url: '',
     // 服务器的url
     server_url: '',
     toolbar: [
@@ -166,12 +178,17 @@ function init(options){
   // 保存的数据
   this.data = {};
 
+  // 获取$PE
+  this.opts.$PE = $$1(this.opts.el);
+
   // 初始化工具条
   init_ui(this.opts, this.UI);
+  
+  // 修正高度
+  correct_height(this);
 
-  // 加载页面, 修正高度
-  load_page(this, correct_height);
-
+  // 加载页面, 
+  this.load_page();
 
   Object.defineProperty(this, 'ori_contents', {
     get: function(){
@@ -311,17 +328,17 @@ function res(dom, type){
       });
       break;
     case 'download' : 
-      var src_uris = [];
+      var res_uris = [];
       this.trans_contents.find('link').each(function(){
-        src_uris.push($$1(this).attr('href'));
+        $$1(this).attr('href') && res_uris.push($$1(this).attr('href'));
       });
       this.trans_contents.find('img, script').each(function(){
-        src_uris.push($$1(this).attr('src'));
+        $$1(this).attr('src') && res_uris.push($$1(this).attr('src'));
       });
       $$1.ajax({
         url : this.opts.server_url,
         type : "post",
-        data : {'type':'download_src', 'src_uris': src_uris},
+        data : {'type':'download_res', 'res_uris': res_uris},
         dataType : "json",
         success : function(data){
           if(data.status == true){
@@ -339,6 +356,7 @@ function res(dom, type){
 }
 
 exports.init = init;
+exports.load_page = load_page;
 exports.source = source;
 exports.publish = publish;
 exports.save = save;

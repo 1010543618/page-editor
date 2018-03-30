@@ -1,4 +1,5 @@
 export {default as init} from "./src/init";
+export {default as load_page} from "./src/load_page";
 export {default as source} from "./src/source";
 export {default as publish} from "./src/publish";
 export {default as save} from "./src/save";

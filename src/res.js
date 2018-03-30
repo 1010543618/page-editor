@@ -23,17 +23,17 @@ export default function(dom, type){
       });
       break;
     case 'download' : 
-      var src_uris = [];
+      var res_uris = [];
       this.trans_contents.find('link').each(function(){
-        src_uris.push($(this).attr('href'));
+        $(this).attr('href') && res_uris.push($(this).attr('href'));
       });
       this.trans_contents.find('img, script').each(function(){
-        src_uris.push($(this).attr('src'));
+        $(this).attr('src') && res_uris.push($(this).attr('src'));
       });
       $.ajax({
         url : this.opts.server_url,
         type : "post",
-        data : {'type':'download_src', 'src_uris': src_uris},
+        data : {'type':'download_res', 'res_uris': res_uris},
         dataType : "json",
         success : function(data){
           if(data.status == true){

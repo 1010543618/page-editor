@@ -4,19 +4,21 @@ import load_page from './load_page'
 import correct_height from './correct_height'
 export default function(options){
   var opts = {}
-  if($.type(options) == 'object'){
-    
+  if($.type(options) == 'object'){ 
+    opts = options;
   }
 
   if($.type(options) == 'string'){
-    opts.$PE = $('#'+options);
+    opts.el = options;
   }
   
   var defaults = {
-    // iframe中页面的url
-    page_url: './iframe_for_test.html',
+    // 左iframe中对照用的页面的url
+    ref_page_url: './iframe_for_test.html',
+    // 右iframe中编辑用的页面的url
+    edit_page_url: './iframe_for_test.html',
     // 原始页面的url
-    ori_url: 'http://getbootstrap.com/docs/4.0/getting-started/introduction/',
+    ori_url: '',
     // 服务器的url
     server_url: '',
     toolbar: [
@@ -46,12 +48,17 @@ export default function(options){
   // 保存的数据
   this.data = {};
 
+  // 获取$PE
+  this.opts.$PE = $(this.opts.el)
+
   // 初始化工具条
   init_ui(this.opts, this.UI);
+  
+  // 修正高度
+  correct_height(this)
 
-  // 加载页面, 修正高度
-  load_page(this, correct_height);
-
+  // 加载页面, 
+  this.load_page();
 
   Object.defineProperty(this, 'ori_contents', {
     get: function(){

@@ -12,16 +12,23 @@
   </style>
 </head>
 <body>
-<div id="page">
-  
-</div>
-
+<div id="page"></div>
 <script src="../node_modules/jquery/dist/jquery.js"></script>
 <script src="../node_modules/bootstrap/dist/js/bootstrap.js"></script>
 <script src="../node_modules/urijs/src/URI.js"></script>
 <script src="../dist/pageeditor.js"></script>
 <script>
-  pe = PE.init('page')
+  pe = PE.init({
+    el: '#page',
+    // 左iframe中对照用的页面的url
+    ref_page_url: './iframe_for_test.html',
+    // 右iframe中编辑用的页面的url
+    edit_page_url: './iframe_for_test.html',
+    // 原始页面的url
+    ori_url: 'http://getbootstrap.com/docs/4.0/getting-started/introduction/',
+    // 服务器的url
+    server_url: '../php/pageeditor.php',
+  })
 </script>
 </body>
 </html>
