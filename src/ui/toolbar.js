@@ -16,7 +16,6 @@ export default '<div style="position: sticky;top: 0;left: 0;z-index: 9999;">\
           <button id="#peui-undo" onclick="PE.undo()" class="btn btn-primary"><i class="fa fa-check"></i> 撤销</button>\
           <button id="#peui-redo" onclick="PE.redo()" class="btn btn-success"><i class="fa fa-save"></i> 重做</button>\
         </div>\
-        <button onclick="PE.show_blocks ()" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 显示区块</button>\
         <div class="input-group input-group-sm">\
           <div class="input-group-prepend">\
             <span class="input-group-text" id="">修正不翻译的元素：</span>\

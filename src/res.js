@@ -1,9 +1,13 @@
 import $ from 'jquery';
 import URI from 'urijs';
+import {ajax} from './core/utils'
 export default function(dom, type){
   switch(type){
     case 'resolve' : 
       if (!URI) console.error('未引入urijs！');
+      // 记录
+      this.data.undo.push(this.pageHTML)
+      
       var ori_url = this.opts.ori_url
       this.ori_contents.find('link').each(function(){
         var href = $(this).attr('href');
@@ -30,22 +34,18 @@ export default function(dom, type){
       this.trans_contents.find('img, script').each(function(){
         $(this).attr('src') && res_uris.push($(this).attr('src'));
       });
-      $.ajax({
-        url : this.opts.server_url,
-        type : "post",
-        data : {'type':'download_res', 'res_uris': res_uris},
-        dataType : "json",
-        success : function(data){
-          if(data.status == true){
-            alert(data.data);
-          }else{
-            alert(data.msg);
-          }
-        },
-        error : function(data){
-          alert("服务器发生错误");
+      ajax(
+        this.opts.server_url, 
+        {'type':'download_res', 'res_uris': res_uris},
+        function(data, alert){
+          var msg = ''
+          data.forEach(function(res, index, arr){
+            msg += (res.downloaded_res_uri ? '成功：' : '失败：') + 
+              res.res_uri + '</br>';
+          })
+          alert(msg);
         }
-      });
+      );
       break;
   }
 }

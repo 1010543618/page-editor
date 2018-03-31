@@ -7,3 +7,5 @@ export {default as preview} from "./src/preview";
 export {default as discard} from "./src/discard";
 export {default as reset} from "./src/reset";
 export {default as res} from "./src/res";
+export {default as undo} from "./src/undo";
+export {default as redo} from "./src/redo";

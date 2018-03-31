@@ -21,6 +21,8 @@ export default function(options){
     ori_url: '',
     // 服务器的url
     server_url: '',
+    // 放弃修改返回的url
+    discard_url: '',
     toolbar: [
       'source', 
       ['publish', 'save', 'preview', 'discard'],
@@ -46,7 +48,10 @@ export default function(options){
   this.opts = $.extend({}, defaults, opts);
 
   // 保存的数据
-  this.data = {};
+  this.data = {
+    undo : [],
+    redo : []
+  };
 
   // 获取$PE
   this.opts.$PE = $(this.opts.el)
@@ -77,10 +82,12 @@ export default function(options){
     },
     set: function(html){
       var trans = this.UI.$trans.get(0)
+      this.data.undo.push(html)
+      this.data.redo = []
       trans.contentDocument.open();
       trans.contentDocument.write(html);
       trans.contentDocument.close();
-    }
+    },
   });
   Object.defineProperty(this, 'pageHTML', {
     get: function(){

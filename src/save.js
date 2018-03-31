@@ -1,19 +1,11 @@
 import $ from 'jquery';
+import {ajax} from './core/utils'
 export default function(){
-  $.ajax({
-    url : this.opts.save_url,
-    type : "post",
-    data : {'html': this.opts.transHTML},
-    dataType : "json",
-    success : function(data){
-      if(data.status == true){
-        alert(data.data);
-      }else{
-        alert(data.msg);
-      }
-    },
-    error : function(data){
-      alert("服务器发生错误");
+  ajax(
+    this.opts.server_url, 
+    {'type':'save', 'html': this.pageHTML},
+    function(data, alert){
+      alert('保存成功', '', 'succ');
     }
-  });
+  );
 }

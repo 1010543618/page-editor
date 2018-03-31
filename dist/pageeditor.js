@@ -25,7 +25,6 @@ var toolbar = '<div style="position: sticky;top: 0;left: 0;z-index: 9999;">\
           <button id="#peui-undo" onclick="PE.undo()" class="btn btn-primary"><i class="fa fa-check"></i> 撤销</button>\
           <button id="#peui-redo" onclick="PE.redo()" class="btn btn-success"><i class="fa fa-save"></i> 重做</button>\
         </div>\
-        <button onclick="PE.show_blocks ()" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 显示区块</button>\
         <div class="input-group input-group-sm">\
           <div class="input-group-prepend">\
             <span class="input-group-text" id="">修正不翻译的元素：</span>\
@@ -151,6 +150,8 @@ function init(options){
     ori_url: '',
     // 服务器的url
     server_url: '',
+    // 放弃修改返回的url
+    discard_url: '',
     toolbar: [
       'source', 
       ['publish', 'save', 'preview', 'discard'],
@@ -176,7 +177,10 @@ function init(options){
   this.opts = $$1.extend({}, defaults, opts);
 
   // 保存的数据
-  this.data = {};
+  this.data = {
+    undo : [],
+    redo : []
+  };
 
   // 获取$PE
   this.opts.$PE = $$1(this.opts.el);
@@ -207,10 +211,12 @@ function init(options){
     },
     set: function(html){
       var trans = this.UI.$trans.get(0);
+      this.data.undo.push(html);
+      this.data.redo = [];
       trans.contentDocument.open();
       trans.contentDocument.write(html);
       trans.contentDocument.close();
-    }
+    },
   });
   Object.defineProperty(this, 'pageHTML', {
     get: function(){
@@ -240,61 +246,76 @@ function source(btn){
   }
 }
 
-function publish(){
+function alert$1(data, title = '', type = ''){
+  var map= {
+    'succ' : 'success',
+    'err' : 'danger'
+  };
+  var alert = '<div class="alert alert-$type$" role="alert">\
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">\
+      <span aria-hidden="true">&times;</span>\
+    </button>\
+    <h4 class="alert-heading">$title$</h4>\
+    <p>$data$</p>\
+  </div>';
+  alert = alert.replace(/\$type\$/, map[type] ? map[type] : 'info');
+  alert = alert.replace(/\$title\$/,title);
+  alert = alert.replace(/\$data\$/,data);
+  console.log(alert,$(alert).alert);
+  $('body').prepend(alert).alert();
+}
+
+var ajax = function(url, data, succ){
   $$1.ajax({
-    url : this.opts.publish_url,
+    url : url,
     type : "post",
-    data : {'html': this.opts.transHTML},
+    data : data,
     dataType : "json",
     success : function(data){
       if(data.status == true){
-        alert(data.data);
+        if (succ) {
+          succ(data.data, alert$1);
+        }else{
+          alert$1(data.data);
+        }
       }else{
-        alert(data.msg);
+        alert$1(data.msg);
       }
     },
     error : function(data){
-      alert("服务器发生错误");
+      alert$1('服务器发生错误', '', 'err');
     }
   });
+};
+
+function publish(){
+  ajax(
+    this.opts.server_url, 
+    {'type':'publish', 'html': this.pageHTML},
+    function(data, alert){
+      alert('发布成功', '', 'succ');
+    }
+  );
 }
 
 function save(){
-  $$1.ajax({
-    url : this.opts.save_url,
-    type : "post",
-    data : {'html': this.opts.transHTML},
-    dataType : "json",
-    success : function(data){
-      if(data.status == true){
-        alert(data.data);
-      }else{
-        alert(data.msg);
-      }
-    },
-    error : function(data){
-      alert("服务器发生错误");
+  ajax(
+    this.opts.server_url, 
+    {'type':'save', 'html': this.pageHTML},
+    function(data, alert){
+      alert('保存成功', '', 'succ');
     }
-  });
+  );
 }
 
 function preview(){
-  $$1.ajax({
-    url : this.opts.preview_url,
-    type : "post",
-    data : {'html': this.opts.transHTML},
-    dataType : "json",
-    success : function(data){
-      if(data.status == true){
-        alert(data.data);
-      }else{
-        alert(data.msg);
-      }
-    },
-    error : function(data){
-      alert("服务器发生错误");
+  ajax(
+    this.opts.server_url, 
+    {'type':'preview', 'html': this.pageHTML},
+    function(data, alert){
+      alert(data, '', 'succ');  
     }
-  });
+  );
 }
 
 function discard(){
@@ -309,6 +330,9 @@ function res(dom, type){
   switch(type){
     case 'resolve' : 
       if (!URI) console.error('未引入urijs！');
+      // 记录
+      this.data.undo.push(this.pageHTML);
+      
       var ori_url = this.opts.ori_url;
       this.ori_contents.find('link').each(function(){
         var href = $$1(this).attr('href');
@@ -335,23 +359,45 @@ function res(dom, type){
       this.trans_contents.find('img, script').each(function(){
         $$1(this).attr('src') && res_uris.push($$1(this).attr('src'));
       });
-      $$1.ajax({
-        url : this.opts.server_url,
-        type : "post",
-        data : {'type':'download_res', 'res_uris': res_uris},
-        dataType : "json",
-        success : function(data){
-          if(data.status == true){
-            alert(data.data);
-          }else{
-            alert(data.msg);
-          }
-        },
-        error : function(data){
-          alert("服务器发生错误");
+      ajax(
+        this.opts.server_url, 
+        {'type':'download_res', 'res_uris': res_uris},
+        function(data, alert){
+          var msg = '';
+          data.forEach(function(res, index, arr){
+            msg += (res.downloaded_res_uri ? '成功：' : '失败：') + 
+              res.res_uri + '</br>';
+          });
+          alert(msg);
         }
-      });
+      );
       break;
+  }
+}
+
+function undo(){
+  var trans = this.UI.$trans.get(0);
+  if (!this.data.undo.length) return;
+  this.data.redo.push(this.pageHTML);
+  if (!this.status.source) {
+    trans.contentDocument.open();
+    trans.contentDocument.write(this.data.undo.pop());
+    trans.contentDocument.close();
+  }else{
+    this.UI.$transHTML.val(this.data.undo.pop());
+  }
+}
+
+function redo(){
+  var trans = this.UI.$trans.get(0);
+  if (!this.data.redo.length) return;
+  this.data.undo.push(this.pageHTML);
+  if (!this.status.source) {
+    trans.contentDocument.open();
+    trans.contentDocument.write(this.data.redo.pop());
+    trans.contentDocument.close();
+  }else{
+    this.UI.$transHTML.val(this.data.redo.pop());
   }
 }
 
@@ -364,6 +410,8 @@ exports.preview = preview;
 exports.discard = discard;
 exports.reset = reset;
 exports.res = res;
+exports.undo = undo;
+exports.redo = redo;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
