@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import URI from 'urijs';
+import URI from 'urijs/URI';
 import {ajax} from './core/utils'
 export default function(dom, type){
   switch(type){

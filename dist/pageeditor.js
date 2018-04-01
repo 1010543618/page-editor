@@ -1,6 +1,6 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('jquery'), require('urijs')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'jquery', 'urijs'], factory) :
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('jquery'), require('urijs/URI')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'jquery', 'urijs/URI'], factory) :
 	(factory((global.PE = {}),global.$,global.URI));
 }(this, (function (exports,$$1,URI) { 'use strict';
 
