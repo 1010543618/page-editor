@@ -1,15 +1,17 @@
 import $ from 'jquery';
-import URI from 'urijs';
+import {default as select} from './correct_not_tarns/select';
+import {default as correct} from './correct_not_tarns/correct';
+import {default as clear} from './correct_not_tarns/clear';
 export default function(dom, type){
   switch(type){
-    case 'select' : 
-      
+    case 'select': 
+      select.call(this);
       break;
-    case 'correct' : 
-      
+    case 'correct': 
+      correct.call(this);
       break;
-    case 'clear' : 
-      
+    case 'clear': 
+      clear.call(this);
       break;
   }
 }

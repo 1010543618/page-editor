@@ -21,13 +21,11 @@ export default '<div style="position: sticky;top: 0;left: 0;z-index: 9999;">\
             <span class="input-group-text" id="">修正不翻译的元素：</span>\
           </div>\
           <div class="input-group-append">\
-            <button onclick="PE.correct_not_trans(\'select\')" class="btn btn-success">选择元素</button>\
-            <button onclick="PE.correct_not_trans(\'correct\')" class="btn btn-danger">进行修正</button>\
-            <button onclick="PE.correct_not_trans(\'clear\')"  class="btn btn-info">清除选择</button>\
+            <button onclick="PE.correct_not_trans(this, \'select\')" class="btn btn-success">选择元素</button>\
+            <button onclick="PE.correct_not_trans(this, \'correct\')" class="btn btn-danger">进行修正</button>\
+            <button onclick="PE.correct_not_trans(this, \'clear\')"  class="btn btn-info">清除选择</button>\
           </div>\
         </div>\
-        <button id="#peui-hide_ori_page" onclick="PE.hide_ori_page ()" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 隐藏原网页</button>\
-        <button id="#peui-reset" onclick="PE.reset ()" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 重置</button>\
       </div>\
     </div>\
   </div>\

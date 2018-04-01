@@ -30,13 +30,11 @@ var toolbar = '<div style="position: sticky;top: 0;left: 0;z-index: 9999;">\
             <span class="input-group-text" id="">修正不翻译的元素：</span>\
           </div>\
           <div class="input-group-append">\
-            <button onclick="PE.correct_not_trans(\'select\')" class="btn btn-success">选择元素</button>\
-            <button onclick="PE.correct_not_trans(\'correct\')" class="btn btn-danger">进行修正</button>\
-            <button onclick="PE.correct_not_trans(\'clear\')"  class="btn btn-info">清除选择</button>\
+            <button onclick="PE.correct_not_trans(this, \'select\')" class="btn btn-success">选择元素</button>\
+            <button onclick="PE.correct_not_trans(this, \'correct\')" class="btn btn-danger">进行修正</button>\
+            <button onclick="PE.correct_not_trans(this, \'clear\')"  class="btn btn-info">清除选择</button>\
           </div>\
         </div>\
-        <button id="#peui-hide_ori_page" onclick="PE.hide_ori_page ()" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 隐藏原网页</button>\
-        <button id="#peui-reset" onclick="PE.reset ()" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 重置</button>\
       </div>\
     </div>\
   </div>\
@@ -322,10 +320,6 @@ function discard(){
   if(confirm('是否放弃当前修改！')) location.href = this.opts.discard_url;
 }
 
-function reset(){
-  this.UI.$trans.attr('src', this.UI.$trans.attr('src'));
-}
-
 function res(dom, type){
   switch(type){
     case 'resolve' : 
@@ -401,6 +395,100 @@ function redo(){
   }
 }
 
+function reset_style_and_uncheck($o){
+  $o.attr('style', function(){
+      return $$1(this).attr('ori_style');
+    })
+    .removeAttr('gpte_not_trans ori_style');
+  return $o;
+}
+
+function select(){
+  var gpte = this;
+  this.data.correct_not_trans = {};
+  var no_trans_id = 1;
+  this.ori_contents.click(this.data.correct_not_trans.ori_click = function(e){
+    var $target = $$1(e.target);
+    if ($target.attr('gpte_not_trans') === undefined) {
+      save_style_and_check($target, 
+        'background: #FFAEC9; border:1px solid #ED1C24;', 
+        no_trans_id++);
+      set_trans(gpte, $target);
+    }else{
+      // 修改trans界面target对应的节点要用到target的gpte_not_trans属性
+      reset_style_and_uncheck(this.trans_contents
+        .find('[gpte_not_trans="' + $target.attr('gpte_not_trans') + '"]'));
+      reset_style_and_uncheck($target);
+    }
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  });
+  function set_trans(gpte, $target){
+    var select = '';
+    select += $target.attr('id') ? '[id="' + $target.attr('id') + '"]' : '';
+    select += $target.attr('class') ? '[class="' + $target.attr('class') + '"]' : '';
+    select += $target.attr('role') ? '[role="' + $target.attr('role') + '"]' : '';
+    select += $target.attr('data') ? '[data="' + $target.attr('data') + '"]' : '';
+    var $selected = gpte.trans_contents.find(select);
+    if ($selected.length === 1) {
+      save_style_and_check($selected, 
+        'background: #FFF200; border:1px solid #FF7F27;', 
+        $target.attr('gpte_not_trans'));
+
+    }else{
+      alert('未找到匹配项，请手动匹配');
+      gpte.trans_contents.one('click', gpte.data.correct_not_trans.trans_click = function(e){
+        save_style_and_check($$1(e.target), 
+          'background: #FFF200; border:1px solid #FF7F27;', 
+          $target.attr('gpte_not_trans')
+          );
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      });
+    }
+  }
+  function save_style_and_check($o, new_style, id){
+    $o.attr('ori_style', function(){
+      return $$1(this).attr('style') || '';
+    }).attr('style', new_style)
+      .attr('gpte_not_trans', id);
+  }
+}
+
+function correct($ori, $trans){
+  var gpte = this;
+  this.trans_contents.find('[gpte_not_trans]').each(function(){
+    $$1(this).replaceWith(
+      reset_style_and_uncheck(gpte.ori_contents
+        .find('[gpte_not_trans="' + $$1(this).attr('gpte_not_trans') + '"]'))
+      .clone()
+    ); 
+  });
+  this.ori_contents.unbind('click', this.data.correct_not_trans.ori_click);
+  this.trans_contents.unbind('click', this.data.correct_not_trans.trans_click);
+}
+
+function clear(){
+  reset_style_and_uncheck(this.ori_contents.find('[gpte_not_trans]'));
+  reset_style_and_uncheck(this.trans_contents.find('[gpte_not_trans]'));
+  this.ori_contents.unbind('click', this.data.correct_not_trans.ori_click);
+  this.trans_contents.unbind('click', this.data.correct_not_trans.trans_click);
+}
+
+function correct_not_trans(dom, type){
+  switch(type){
+    case 'select': 
+      select.call(this);
+      break;
+    case 'correct': 
+      correct.call(this);
+      break;
+    case 'clear': 
+      clear.call(this);
+      break;
+  }
+}
+
 exports.init = init;
 exports.load_page = load_page;
 exports.source = source;
@@ -408,10 +496,10 @@ exports.publish = publish;
 exports.save = save;
 exports.preview = preview;
 exports.discard = discard;
-exports.reset = reset;
 exports.res = res;
 exports.undo = undo;
 exports.redo = redo;
+exports.correct_not_trans = correct_not_trans;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
