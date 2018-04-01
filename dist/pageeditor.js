@@ -489,6 +489,9 @@ function correct_not_trans(dom, type){
   }
 }
 
+// 使用requirejs时要手动给window.PE赋值
+window.PE = window.PE || exports;
+
 exports.init = init;
 exports.load_page = load_page;
 exports.source = source;
