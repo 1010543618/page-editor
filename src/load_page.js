@@ -27,8 +27,8 @@ export default function(callback){
   }
   $.when(get_ref, get_edit)
     .done(function(ref_html,edit_html){
-      PE.ori_contents = ref_html
-      PE.trans_contents = edit_html
+      PE.ori_contents = ref_html[0]
+      PE.trans_contents = edit_html[0]
       hidden_overflow_y()
       callback && callback.call(PE)
     })
