@@ -15,16 +15,19 @@ export default function(callback){
     dataType : "html",
   });
   // 去除html的y滚动条
+  /**
+  *给$trans设置了overflow-y:hidden：保存时要记得取消，
+  *不然保存的翻译后的网页再次浏览时y方向超出的也全隐藏了
+  */
+  
   var hidden_overflow_y = function(){
     PE.UI.$ori.contents().find('html').attr('style', function(){
       var this_style = $(this).attr('style')
       return this_style ? this_style + ";overflow-y:hidden" : "overflow-y:hidden";
     })
-    PE.UI.$trans.contents().find('html').attr('style', function(){
-      var this_style = $(this).attr('style')
-      return this_style ? this_style + ";overflow-y:hidden" : "overflow-y:hidden";
-    })
+    PE.UI.$trans.hidden_overflow_y()
   }
+  
   $.when(get_ref, get_edit)
     .done(function(ref_html,edit_html){
       PE.ori_contents = ref_html[0]
@@ -32,5 +35,5 @@ export default function(callback){
       hidden_overflow_y()
       callback && callback.call(PE)
     })
-    .fail(function(){alert("服务器发生错误");}); 
+    .fail(function(){alert("服务器发生错误");});
 }

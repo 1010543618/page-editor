@@ -7,71 +7,129 @@
 $$1 = $$1 && $$1.hasOwnProperty('default') ? $$1['default'] : $$1;
 URI = URI && URI.hasOwnProperty('default') ? URI['default'] : URI;
 
-var toolbar = '<div style="position: sticky;top: 0;left: 0;z-index: 9999;">\
-  <div class="card text-white bg-secondary">\
-    <div class="card-body">\
-      <div class="btn-toolbar" role="toolbar">\
-        <button id="#peui-load_page" onclick="PE.load_page()" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 加载页面</button>\
-        <button id="#peui-source" onclick="PE.source(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> HTML源码</button>\
-        <button id="#peui-res" onclick="PE.res(this, \'resolve\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 修正外部资源url</button>\
-        <button id="#peui-res" onclick="PE.res(this, \'download\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 下载外部资源</button>\
-        <div class="btn-group btn-group-sm">\
-          <button id="#peui-publish" onclick="PE.publish()" class="btn btn-primary"><i class="fa fa-check"></i> 发布</button>\
-          <button id="#peui-save" onclick="PE.save()" class="btn btn-success"><i class="fa fa-save"></i> 保存</button>\
-          <button id="#peui-preview" onclick="PE.preview()" class="btn btn-dark"><i class="fa fa-eye"></i> 预览</button>\
-          <button id="#peui-discard" onclick="PE.discard()" class="btn btn-danger"><i class="fa fa-undo"></i> 放弃</button>\
-        </div>\
-        <div class="btn-group btn-group-sm">\
-          <button id="#peui-undo" onclick="PE.undo()" class="btn btn-primary"><i class="fa fa-check"></i> 撤销</button>\
-          <button id="#peui-redo" onclick="PE.redo()" class="btn btn-success"><i class="fa fa-save"></i> 重做</button>\
-        </div>\
-        <div class="input-group input-group-sm">\
-          <div class="input-group-prepend">\
-            <span class="input-group-text" id="">修正不翻译的元素：</span>\
+function toolbar(UI, opts){
+  var $toolbar = $('<div style="position: sticky;top: 0;left: 0;z-index: 9999;">\
+    <div class="card text-white bg-secondary">\
+      <div class="card-body">\
+        <div class="btn-toolbar" role="toolbar">\
+          <button id="#peui-load_page" onclick="PE.load_page()" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 加载页面</button>\
+          <button id="#peui-source" onclick="PE.source(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> HTML源码</button>\
+          <button id="#peui-source" onclick="PE.hide_ori(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 隐藏原网页</button>\
+          <button id="#peui-res" onclick="PE.res(this, \'resolve\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 修正外部资源url</button>\
+          <button id="#peui-res" onclick="PE.res(this, \'download\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 下载外部资源</button>\
+          <div class="btn-group btn-group-sm">\
+            <button id="#peui-publish" onclick="PE.publish()" class="btn btn-primary"><i class="fa fa-check"></i> 发布</button>\
+            <button id="#peui-save" onclick="PE.save()" class="btn btn-success"><i class="fa fa-save"></i> 保存</button>\
+            <button id="#peui-preview" onclick="PE.preview()" class="btn btn-dark"><i class="fa fa-eye"></i> 预览</button>\
+            <button id="#peui-discard" onclick="PE.discard()" class="btn btn-danger"><i class="fa fa-undo"></i> 放弃</button>\
           </div>\
-          <div class="input-group-append">\
-            <button onclick="PE.correct_not_trans(this, \'select\')" class="btn btn-success">选择元素</button>\
-            <button onclick="PE.correct_not_trans(this, \'correct\')" class="btn btn-danger">进行修正</button>\
-            <button onclick="PE.correct_not_trans(this, \'clear\')"  class="btn btn-info">清除选择</button>\
+          <div class="btn-group btn-group-sm">\
+            <button id="#peui-undo" onclick="PE.undo()" class="btn btn-primary"><i class="fa fa-check"></i> 撤销</button>\
+            <button id="#peui-redo" onclick="PE.redo()" class="btn btn-success"><i class="fa fa-save"></i> 重做</button>\
+          </div>\
+          <div class="input-group input-group-sm">\
+            <div class="input-group-prepend">\
+              <span class="input-group-text" id="">修正不翻译的元素：</span>\
+            </div>\
+            <div class="input-group-append">\
+              <button onclick="PE.correct_not_trans(this, \'select\')" class="btn btn-success">选择元素</button>\
+              <button onclick="PE.correct_not_trans(this, \'correct\')" class="btn btn-danger">进行修正</button>\
+              <button onclick="PE.correct_not_trans(this, \'clear\')"  class="btn btn-info">清除选择</button>\
+            </div>\
           </div>\
         </div>\
       </div>\
     </div>\
-  </div>\
-</div>';
-
-var display_window = '<div class="container-fluid">\
-  <div class="row">\
-    <div class="col-md-6 border border-danger">\
-      <div class="row">\
-        <iframe id="peui-ori" class="w-100" frameborder="0" src=""></iframe></iframe>\
-      </div>\
-    </div>\
-    <div class="col-md-6 border border-primary">\
-      <div class="row">\
-        <iframe id="peui-trans" class="w-100" frameborder="0" src=""></iframe>\
-        <textarea id="peui-transHTML" class="w-100"></textarea>\
-      </div>\
-    </div>\
-  </div>\
-</div>';
-
-function init_ui(opts, UI){
-  var $PE = opts.$PE;
-  // 以后写toolbar
-  $PE.append(toolbar);
+  </div>');
+  /*$toolbar.tools = []
   for (var i = opts.toolbar.length - 1; i >= 0; i--) {
     if ($.isArray(opts.toolbar[i])) {
       for (var j = opts.toolbar[i].length - 1; j >= 0; j--) {
-        UI.$ori = $PE.find('#peui-'+opts.toolbar[i][j]);
+        $toolbar.tools.push($PE.find('#peui-'+opts.toolbar[i][j]))
       }
     }
-    UI.$ori = $PE.find('#peui-'+opts.toolbar[i]);
-  }
-  $PE.append(display_window);
-  UI.$ori = $PE.find('#peui-ori');
-  UI.$trans = $PE.find('#peui-trans');
-  UI.$transHTML = $PE.find('#peui-transHTML');
+    $toolbar.tools.push(find('#peui-'+opts.toolbar[i]))
+  }*/
+  UI.toolbar = $toolbar;
+  return $toolbar
+}
+
+function ori(UI){
+  var $ori = $('<iframe id="peui-ori" class="w-100" frameborder="0" src=""></iframe>');
+  UI.$ori = $ori;
+  return $ori
+}
+
+var trans_iframe = function(UI){
+  var $trans_iframe = $('<iframe id="peui-trans" class="w-100" frameborder="0" src=""></iframe>');
+  $trans_iframe.hidden_overflow_y = function(){
+    this.contents().find('html').attr('style', function(){
+      var this_style = $(this).attr('style') || '';
+      return this_style + ";overflow-y:hidden";
+    });
+    return this;
+  };
+  $trans_iframe.show_overflow_y = function(){
+    this.contents().find('html').attr('style', function(){
+      var this_style = $(this).attr('style') || '';
+      return this_style.replace(/;overflow-y:hidden/, '');
+    });
+    return this;
+  };
+  UI.$trans = $trans_iframe;
+  return $trans_iframe
+};
+
+var trans_textarea = function(UI){
+  var $trans_textarea = $('<textarea id="peui-transHTML" class="w-100"></textarea>');
+  $trans_textarea.hide();
+  UI.$transHTML = $trans_textarea;
+  return $trans_textarea
+};
+
+var ori_c = function(UI){
+  var $ori_c = $('<div class="col-md-6 border border-danger">\
+    <div class="row">\
+    </div>\
+  </div>');
+  $ori_c.find('.row').append(ori(UI));
+  return $ori_c
+};
+
+var trans_c = function(UI){
+  var $trans_c = $('<div class="col-md-6 border border-primary">\
+    <div class="row">\
+    </div>\
+  </div>');
+  $trans_c.find('.row').append(trans_textarea(UI));
+  $trans_c.find('.row').append(trans_iframe(UI));
+  return $trans_c
+};
+
+function display_window(UI){
+  var $dispaly_window = $('<div class="container-fluid">\
+    <div class="row">\
+    </div>\
+  </div>');
+  var $ori_c = ori_c(UI);
+  var $trans_c = trans_c(UI);
+  $dispaly_window.find('.row').append([$ori_c, $trans_c]);
+  $dispaly_window.hide_ori_c = function(){
+    $ori_c.hide();
+    $trans_c.removeClass('col-md-6').addClass('col-md-12');
+  };
+  $dispaly_window.show_ori_c = function(){
+    $trans_c.removeClass('col-md-12').addClass('col-md-6');
+    $ori_c.show();
+  };
+  UI.display_window = $dispaly_window;
+  return $dispaly_window
+}
+
+function init_ui(opts, UI){
+  var $PE = opts.$PE;
+  $PE.append(toolbar(UI, opts));
+  $PE.append(display_window(UI));
 }
 
 /**
@@ -90,16 +148,19 @@ function load_page(callback){
     dataType : "html",
   });
   // 去除html的y滚动条
+  /**
+  *给$trans设置了overflow-y:hidden：保存时要记得取消，
+  *不然保存的翻译后的网页再次浏览时y方向超出的也全隐藏了
+  */
+  
   var hidden_overflow_y = function(){
     PE.UI.$ori.contents().find('html').attr('style', function(){
       var this_style = $$1(this).attr('style');
       return this_style ? this_style + ";overflow-y:hidden" : "overflow-y:hidden";
     });
-    PE.UI.$trans.contents().find('html').attr('style', function(){
-      var this_style = $$1(this).attr('style');
-      return this_style ? this_style + ";overflow-y:hidden" : "overflow-y:hidden";
-    });
+    PE.UI.$trans.hidden_overflow_y();
   };
+  
   $$1.when(get_ref, get_edit)
     .done(function(ref_html,edit_html){
       PE.ori_contents = ref_html[0];
@@ -107,7 +168,7 @@ function load_page(callback){
       hidden_overflow_y();
       callback && callback.call(PE);
     })
-    .fail(function(){alert("服务器发生错误");}); 
+    .fail(function(){alert("服务器发生错误");});
 }
 
 function correct_height(PE){
@@ -123,7 +184,7 @@ function correct_height(PE){
       $ori.height(PE.data.ori_height);
     }
     if (Math.abs(PE.data.trans_height - $trans.contents().height()) > 20) {
-      PE.data.trans_height = $trans.contents().height()+20;
+      PE.data.trans_height = $trans.contents().height() + 20;
       $trans.height(PE.data.trans_height);
     }
   }, 500);
@@ -241,6 +302,18 @@ function source(btn){
     this.UI.$transHTML.hide();
     this.UI.$trans.show();
     this.status.source = false;
+  }
+}
+
+function hide_ori(btn){
+  if (!this.status.hide_ori) {
+    $$1(btn).addClass('active');
+    this.UI.display_window.hide_ori_c();
+    this.status.hide_ori = true;
+  }else{
+    $$1(btn).removeClass('active');
+    this.UI.display_window.show_ori_c();
+    this.status.hide_ori = false;
   }
 }
 
@@ -495,6 +568,7 @@ window.PE = window.PE || exports;
 exports.init = init;
 exports.load_page = load_page;
 exports.source = source;
+exports.hide_ori = hide_ori;
 exports.publish = publish;
 exports.save = save;
 exports.preview = preview;

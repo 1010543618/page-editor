@@ -1,6 +1,7 @@
 export {default as init} from "./src/init";
 export {default as load_page} from "./src/load_page";
 export {default as source} from "./src/source";
+export {default as hide_ori} from "./src/hide_ori";
 export {default as publish} from "./src/publish";
 export {default as save} from "./src/save";
 export {default as preview} from "./src/preview";

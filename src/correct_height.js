@@ -12,7 +12,7 @@ export default function(PE){
       $ori.height(PE.data.ori_height)
     }
     if (Math.abs(PE.data.trans_height - $trans.contents().height()) > 20) {
-      PE.data.trans_height = $trans.contents().height()+20
+      PE.data.trans_height = $trans.contents().height() + 20
       $trans.height(PE.data.trans_height)
     }
   }, 500);
