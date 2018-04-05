@@ -10,6 +10,6 @@ export {default as res} from "./src/res";
 export {default as undo} from "./src/undo";
 export {default as redo} from "./src/redo";
 export {default as correct_not_trans} from "./src/correct_not_trans";
-
+export {default as google_translate}from "./src/google_translate";
 // 使用requirejs时要手动给window.PE赋值
 window.PE = window.PE || exports
