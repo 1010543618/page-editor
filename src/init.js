@@ -50,7 +50,8 @@ export default function(options){
   // 保存的数据
   this.data = {
     undo : [],
-    redo : []
+    redo : [],
+    gt : {}
   };
 
   // 获取$PE

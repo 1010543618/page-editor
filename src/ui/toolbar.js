@@ -8,6 +8,17 @@ export default function(UI, opts){
           <button id="#peui-source" onclick="PE.hide_ori(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 隐藏原网页</button>\
           <button id="#peui-res" onclick="PE.res(this, \'resolve\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 修正外部资源url</button>\
           <button id="#peui-res" onclick="PE.res(this, \'download\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 下载外部资源</button>\
+          <div class="input-group input-group-sm">\
+            <div class="input-group-prepend">\
+              <span class="input-group-text" id="">使用Google网页翻译器：</span>\
+            </div>\
+            <div class="input-group-append">\
+              <button onclick="PE.google_translate(this, \'inject\')" class="btn btn-success">注入翻译器</button>\
+              <button onclick="PE.google_translate(this, \'del\')" class="btn btn-danger">删除翻译器</button>\
+              <button onclick="PE.google_translate(this, \'save\')"  class="btn btn-info">保存结果</button>\
+              <button onclick="PE.google_translate(this, \'inject_popup_script\')"  class="btn btn-info">注入提示</button>\
+            </div>\
+          </div>\
           <div class="btn-group btn-group-sm">\
             <button id="#peui-publish" onclick="PE.publish()" class="btn btn-primary"><i class="fa fa-check"></i> 发布</button>\
             <button id="#peui-save" onclick="PE.save()" class="btn btn-success"><i class="fa fa-save"></i> 保存</button>\
