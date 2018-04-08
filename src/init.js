@@ -40,7 +40,7 @@ export default function(options){
   // 编辑器的状态
   this.status = {
     source: false,
-    edit: false,
+    edit_trans: false,
     binding_scroll: false
   }
 

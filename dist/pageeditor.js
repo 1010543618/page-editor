@@ -28,6 +28,7 @@ function toolbar(UI, opts){
               <button onclick="PE.google_translate(this, \'inject_popup_script\')"  class="btn btn-info">注入提示</button>\
             </div>\
           </div>\
+          <button id="#peui-edit_trans" onclick="PE.edit_trans(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 编辑翻译后页面</button>\
           <div class="btn-group btn-group-sm">\
             <button id="#peui-publish" onclick="PE.publish()" class="btn btn-primary"><i class="fa fa-check"></i> 发布</button>\
             <button id="#peui-save" onclick="PE.save()" class="btn btn-success"><i class="fa fa-save"></i> 保存</button>\
@@ -239,7 +240,7 @@ function init(options){
   // 编辑器的状态
   this.status = {
     source: false,
-    edit: false,
+    edit_trans: false,
     binding_scroll: false
   };
 
@@ -643,6 +644,44 @@ function google_translate(dom, type){
   }
 }
 
+function edit_trans(btn){
+  if (!this.status.edit_trans) {
+    $$1(btn).addClass('active');
+    var $fonts = this.trans_contents.find('font font');
+    $fonts.prop('contenteditable', true)
+      .css('color', 'red');
+    // Firefox和Chrome早期版本中带有前缀
+    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+
+    // 选择目标节点
+    var targets = $fonts.get();
+    // 创建观察者对象
+    var observer = new MutationObserver(function(mutations) {
+      var font = mutations[0].target.parentNode;
+      if (mutations[0].type == 'characterData' && font) {
+        // var id = $(mutations[0].target.parentNode).attr('pe-gt-id')
+        // google_translate_result.ts[id]
+      }
+      console.log(this, mutations);
+    });
+    // 配置观察选项:
+    var config = { subtree: true, characterData: true};
+     
+    targets.forEach(function(target){
+
+      // 传入目标节点和观察选项
+      observer.observe(target, config);
+      
+    });
+    
+  }else{
+    $$1(btn).removeClass('active');
+    this.trans_contents.find('font font').prop('contenteditable', true);
+    // 随后,你还可以停止观察
+    observer.disconnect();
+  }
+}
+
 // 使用requirejs时要手动给window.PE赋值
 window.PE = window.PE || exports;
 
@@ -659,6 +698,7 @@ exports.undo = undo;
 exports.redo = redo;
 exports.correct_not_trans = correct_not_trans;
 exports.google_translate = google_translate;
+exports.edit_trans = edit_trans;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
