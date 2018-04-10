@@ -59,8 +59,7 @@ export default function(dom, type){
       this.pageHTML = this.pageHTML
       break
     case 'save':
-      this.trans_contents.find('body').append('<script id="google_translate_result">google_translate_result = '
-        +JSON.stringify(this.data.json_obj)+'</script>')
+      this.UI.$trans.set_gtr(JSON.stringify(this.data.json_obj))
       break
     case 'inject_popup_script':
       break

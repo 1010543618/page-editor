@@ -15,6 +15,21 @@ var trans_iframe = function(UI){
     })
     return this;
   }
+  $trans_iframe.set_gtr = function(gtr){
+    var body = this.contents().find('body')
+    var $gtr = body.find('script#google_translate_result')
+    if ($gtr.length) {
+      $gtr.html(gtr)
+    }else{
+      body.append('<script id="google_translate_result">'
+        +gtr+'</script>')
+    }
+    return this;
+  }
+  $trans_iframe.get_gtr = function(){
+    var gtr = this.contents().find('script#google_translate_result')
+    return gtr.length ? JSON.parse(gtr.html()) : false;
+  }
   UI.$trans = $trans_iframe
   return $trans_iframe
 }
