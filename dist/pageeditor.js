@@ -29,6 +29,7 @@ function toolbar(UI, opts){
             </div>\
           </div>\
           <button id="#peui-edit_trans" onclick="PE.edit_trans(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 编辑翻译后页面</button>\
+          <button id="#peui-edit_trans" onclick="PE.edit_trans(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 保存编辑</button>\
           <div class="btn-group btn-group-sm">\
             <button id="#peui-publish" onclick="PE.publish()" class="btn btn-primary"><i class="fa fa-check"></i> 发布</button>\
             <button id="#peui-save" onclick="PE.save()" class="btn btn-success"><i class="fa fa-save"></i> 保存</button>\
@@ -90,6 +91,7 @@ var trans_iframe = function(UI){
   };
   $trans_iframe.set_gtr = function(gtr){
     var body = this.contents().find('body');
+    console.log(body, gtr);
     var $gtr = body.find('script#google_translate_result');
     if ($gtr.length) {
       $gtr.html(gtr);
@@ -426,24 +428,37 @@ function res(dom, type){
     case 'resolve' : 
       if (!URI) console.error('未引入urijs！');
       // 记录
-      this.data.undo.push(this.pageHTML);
-      
+      this.data.undo.push({
+        name: '修正外部资源url',
+        html: this.pageHTML
+      });
+      // 原页面
       var ori_url = this.opts.ori_url;
       this.ori_contents.find('link').each(function(){
         var href = $$1(this).attr('href');
         href && !URI(href).hostname() && $$1(this).attr('href', URI(href).absoluteTo(ori_url));
-      });
-      this.trans_contents.find('link').each(function(){
-        var href = $$1(this).attr('href');
-        href && !URI(href).hostname() && $$1(this).attr('href', URI(href).absoluteTo(ori_url));
+        // 去除integrity标签
+        $$1(this).removeAttr('integrity');
       });
       this.ori_contents.find('img, script').each(function(){
         var src = $$1(this).attr('src');
         src && !URI(src).hostname() && $$1(this).attr('src', URI(src).absoluteTo(ori_url));
+        // 去除integrity标签
+        $$1(this).removeAttr('integrity');
+      });
+
+      // 翻译页面
+      this.trans_contents.find('link').each(function(){
+        var href = $$1(this).attr('href');
+        href && !URI(href).hostname() && $$1(this).attr('href', URI(href).absoluteTo(ori_url));
+        // 去除integrity标签
+        $$1(this).removeAttr('integrity');
       });
       this.trans_contents.find('img, script').each(function(){
         var src = $$1(this).attr('src');
         src && !URI(src).hostname() && $$1(this).attr('src', URI(src).absoluteTo(ori_url));
+        // 去除integrity标签
+        $$1(this).removeAttr('integrity');
       });
       break;
     case 'download' : 
@@ -661,52 +676,64 @@ function google_translate(dom, type){
 function edit_trans(btn){
   if (!this.status.edit_trans) {
     var $fonts = this.trans_contents.find('font font');
-    var gtr = this.UI.$trans.get_gtr();
-    var PE = this;
-    if (!gtr) {
+    if (!this.UI.$trans.get_gtr()) {
       alert$1('该页面未翻译，或翻译后未保存', '无法编辑', 'err');
       return
     }
     $$1(btn).addClass('active');
     this.status.edit_trans = true;
-    this.data.gtr = gtr;
     $fonts.prop('contenteditable', true)
-      .css('color', 'red');
-    // Firefox和Chrome早期版本中带有前缀
-    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+      .css({
+        'color': 'red',
+        'cursor': 'text'
+      }).on('click', function(e){
+        console.log(e);
+        e.preventDefault();
+        e.stopPropagation();
+      });
 
-    // 选择目标节点
+    // 观察font节点变化
+    /*不用观察，最后一起改了也行
+    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver
     var targets = $fonts.get();
-    // 创建观察者对象
       PE.data.edit_trans_observer = new MutationObserver(function(mutations) {
-      var font = mutations[0].target.parentNode;
+      var font = mutations[0].target.parentNode
       if (mutations[0].type == 'characterData' && font) {
-        var id = $$1(mutations[0].target.parentNode).attr('pe-gt-id');
-        var t_text = '';
-        $fonts.filter("[pe-gt-id=34]").each(function(){
-          t_text += $$1(this).text();
-        });
-        PE.data.gtr.ts[id].t_text = t_text;
+        var id = $(mutations[0].target.parentNode).attr('pe-gt-id')
+        var t_text = ''
+        $fonts.filter("[pe-gt-id="+id+"]").each(function(){
+          t_text += $(this).text()
+        })
+        PE.data.gtr.ts[id].t_text = t_text
       }
     });
-    // 配置观察选项:
-    var config = { subtree: true, characterData: true};
-     
+    var config = { subtree: true, characterData: true}
     targets.forEach(function(target){
-
-      // 传入目标节点和观察选项
       PE.data.edit_trans_observer.observe(target, config);
-      
-    });
-    
+    })
+    */
   }else{
     $$1(btn).removeClass('active');
+    var $fonts = this.trans_contents.find('font font');
+    var gtr = this.UI.$trans.get_gtr();
     this.status.edit_trans = false;
-    this.UI.$trans.set_gtr(JSON.stringify(this.data.gtr));
-    this.trans_contents.find('font font').prop('contenteditable', true)
-      .css('color', '');
-    // 随后,你还可以停止观察
+    for (var t in gtr.ts){
+      var t_text = '';
+      $fonts.filter("[pe-gt-id="+t+"]").each(function(){
+        t_text += $$1(this).text();
+      });
+      gtr.ts[t].t_text = t_text;
+    }
+    this.UI.$trans.set_gtr(JSON.stringify(gtr));
+    this.trans_contents.find('font font').prop('contenteditable', false)
+      .css({
+        'color': '',
+        'cursor': ''
+      }).off('click');
+    // 停止font节点变化观察
+    /*不用观察，最后一起改了也行
     this.data.edit_trans_observer.disconnect();
+    */
   }
 }
 

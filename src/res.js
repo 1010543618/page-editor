@@ -6,24 +6,37 @@ export default function(dom, type){
     case 'resolve' : 
       if (!URI) console.error('未引入urijs！');
       // 记录
-      this.data.undo.push(this.pageHTML)
-      
+      this.data.undo.push({
+        name: '修正外部资源url',
+        html: this.pageHTML
+      })
+      // 原页面
       var ori_url = this.opts.ori_url
       this.ori_contents.find('link').each(function(){
         var href = $(this).attr('href');
         href && !URI(href).hostname() && $(this).attr('href', URI(href).absoluteTo(ori_url));
-      });
-      this.trans_contents.find('link').each(function(){
-        var href = $(this).attr('href');
-        href && !URI(href).hostname() && $(this).attr('href', URI(href).absoluteTo(ori_url));
+        // 去除integrity标签
+        $(this).removeAttr('integrity')
       });
       this.ori_contents.find('img, script').each(function(){
         var src = $(this).attr('src');
         src && !URI(src).hostname() && $(this).attr('src', URI(src).absoluteTo(ori_url));
+        // 去除integrity标签
+        $(this).removeAttr('integrity')
+      });
+
+      // 翻译页面
+      this.trans_contents.find('link').each(function(){
+        var href = $(this).attr('href');
+        href && !URI(href).hostname() && $(this).attr('href', URI(href).absoluteTo(ori_url));
+        // 去除integrity标签
+        $(this).removeAttr('integrity')
       });
       this.trans_contents.find('img, script').each(function(){
         var src = $(this).attr('src');
         src && !URI(src).hostname() && $(this).attr('src', URI(src).absoluteTo(ori_url));
+        // 去除integrity标签
+        $(this).removeAttr('integrity')
       });
       break;
     case 'download' : 
