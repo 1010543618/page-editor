@@ -12,5 +12,6 @@ export {default as redo} from "./src/redo";
 export {default as correct_not_trans} from "./src/correct_not_trans";
 export {default as google_translate} from "./src/google_translate";
 export {default as edit_trans}from "./src/edit_trans";
+export {default as disable_script}from "./src/disable_script";
 // 使用requirejs时要手动给window.PE赋值
 window.PE = window.PE || exports

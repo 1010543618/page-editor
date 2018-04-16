@@ -15,6 +15,7 @@ function toolbar(UI, opts){
           <button id="#peui-load_page" onclick="PE.load_page()" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 加载页面</button>\
           <button id="#peui-source" onclick="PE.source(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> HTML源码</button>\
           <button id="#peui-source" onclick="PE.hide_ori(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 隐藏原网页</button>\
+          <button id="#peui-res" onclick="PE.disable_script(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 禁用js</button>\
           <button id="#peui-res" onclick="PE.res(this, \'resolve\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 修正外部资源url</button>\
           <button id="#peui-res" onclick="PE.res(this, \'download\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 下载外部资源</button>\
           <div class="input-group input-group-sm">\
@@ -29,7 +30,6 @@ function toolbar(UI, opts){
             </div>\
           </div>\
           <button id="#peui-edit_trans" onclick="PE.edit_trans(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 编辑翻译后页面</button>\
-          <button id="#peui-edit_trans" onclick="PE.edit_trans(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 保存编辑</button>\
           <div class="btn-group btn-group-sm">\
             <button id="#peui-publish" onclick="PE.publish()" class="btn btn-primary"><i class="fa fa-check"></i> 发布</button>\
             <button id="#peui-save" onclick="PE.save()" class="btn btn-success"><i class="fa fa-save"></i> 保存</button>\
@@ -91,7 +91,6 @@ var trans_iframe = function(UI){
   };
   $trans_iframe.set_gtr = function(gtr){
     var body = this.contents().find('body');
-    console.log(body, gtr);
     var $gtr = body.find('script#google_translate_result');
     if ($gtr.length) {
       $gtr.html(gtr);
@@ -737,6 +736,26 @@ function edit_trans(btn){
   }
 }
 
+function disable_script(btn){
+  if (!this.status.disable_script) {
+    $$1(btn).addClass('active');
+    this.status.disable_script = true;
+    this.trans_contents.find('script').replaceWith(function(){
+      return this.outerHTML
+        .replace(/^<script/, '<pe-no-script')
+        .replace(/<\/script>/, '<\/pe-no-script>')
+      });
+  }else{
+    $$1(btn).removeClass('active');
+    this.status.disable_script = false;
+    this.trans_contents.find('pe-no-script').replaceWith(function(){
+      return this.outerHTML
+        .replace(/^<pe-no-script/, '<script')
+        .replace(/<\/pe-no-script>/, '<\/script>')
+      });
+  }
+}
+
 // 使用requirejs时要手动给window.PE赋值
 window.PE = window.PE || exports;
 
@@ -754,6 +773,7 @@ exports.redo = redo;
 exports.correct_not_trans = correct_not_trans;
 exports.google_translate = google_translate;
 exports.edit_trans = edit_trans;
+exports.disable_script = disable_script;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

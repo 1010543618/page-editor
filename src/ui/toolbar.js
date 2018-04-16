@@ -6,6 +6,7 @@ export default function(UI, opts){
           <button id="#peui-load_page" onclick="PE.load_page()" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 加载页面</button>\
           <button id="#peui-source" onclick="PE.source(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> HTML源码</button>\
           <button id="#peui-source" onclick="PE.hide_ori(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 隐藏原网页</button>\
+          <button id="#peui-res" onclick="PE.disable_script(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 禁用js</button>\
           <button id="#peui-res" onclick="PE.res(this, \'resolve\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 修正外部资源url</button>\
           <button id="#peui-res" onclick="PE.res(this, \'download\')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 下载外部资源</button>\
           <div class="input-group input-group-sm">\
