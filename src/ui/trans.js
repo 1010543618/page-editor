@@ -30,6 +30,11 @@ var trans_iframe = function(UI){
     var gtr = this.contents().find('script#google_translate_result')
     return gtr.length ? JSON.parse(gtr.html()) : false;
   }
+  $trans_iframe.clear_unnecessary_tags = function(){
+    this.contents().find('font[pe-gt-id]:has(*)')
+      .text(function(){return $(this).text()})
+    return this;
+  }
   UI.$trans = $trans_iframe
   return $trans_iframe
 }

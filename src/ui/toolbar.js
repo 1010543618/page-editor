@@ -21,6 +21,7 @@ export default function(UI, opts){
             </div>\
           </div>\
           <button id="#peui-edit_trans" onclick="PE.edit_trans(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 编辑翻译后页面</button>\
+          <button id="#peui-edit_trans" onclick="PE.clear_unnecessary_tags(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 清理编辑时产生的多余的标签</button>\
           <div class="btn-group btn-group-sm">\
             <button id="#peui-publish" onclick="PE.publish()" class="btn btn-primary"><i class="fa fa-check"></i> 发布</button>\
             <button id="#peui-save" onclick="PE.save()" class="btn btn-success"><i class="fa fa-save"></i> 保存</button>\

@@ -30,6 +30,7 @@ function toolbar(UI, opts){
             </div>\
           </div>\
           <button id="#peui-edit_trans" onclick="PE.edit_trans(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 编辑翻译后页面</button>\
+          <button id="#peui-edit_trans" onclick="PE.clear_unnecessary_tags(this)" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 清理编辑时产生的多余的标签</button>\
           <div class="btn-group btn-group-sm">\
             <button id="#peui-publish" onclick="PE.publish()" class="btn btn-primary"><i class="fa fa-check"></i> 发布</button>\
             <button id="#peui-save" onclick="PE.save()" class="btn btn-success"><i class="fa fa-save"></i> 保存</button>\
@@ -103,6 +104,11 @@ var trans_iframe = function(UI){
   $trans_iframe.get_gtr = function(){
     var gtr = this.contents().find('script#google_translate_result');
     return gtr.length ? JSON.parse(gtr.html()) : false;
+  };
+  $trans_iframe.clear_unnecessary_tags = function(){
+    this.contents().find('font[pe-gt-id]:has(*)')
+      .text(function(){return $(this).text()});
+    return this;
   };
   UI.$trans = $trans_iframe;
   return $trans_iframe
@@ -685,8 +691,9 @@ function edit_trans(btn){
       .css({
         'color': 'red',
         'cursor': 'text'
-      }).on('click', function(e){
-        console.log(e);
+      })
+      .on('click', function(e){
+        // console.log(e)
         e.preventDefault();
         e.stopPropagation();
       });
@@ -756,6 +763,14 @@ function disable_script(btn){
   }
 }
 
+function clear_unnecessary_tags(dom){
+  if(this.UI.$trans.clear_unnecessary_tags()){
+    alert$1('清理成功');
+  }else{
+    alert$1('清理失败');
+  }
+}
+
 // 使用requirejs时要手动给window.PE赋值
 window.PE = window.PE || exports;
 
@@ -774,6 +789,7 @@ exports.correct_not_trans = correct_not_trans;
 exports.google_translate = google_translate;
 exports.edit_trans = edit_trans;
 exports.disable_script = disable_script;
+exports.clear_unnecessary_tags = clear_unnecessary_tags;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

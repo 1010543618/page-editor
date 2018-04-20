@@ -13,8 +13,9 @@ export default function(btn){
       .css({
         'color': 'red',
         'cursor': 'text'
-      }).on('click', function(e){
-        console.log(e)
+      })
+      .on('click', function(e){
+        // console.log(e)
         e.preventDefault()
         e.stopPropagation()
       })
